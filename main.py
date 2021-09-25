@@ -1,5 +1,8 @@
 import os
 import sys
+import pywhatkit as pwk
+import datetime
+import pandas as pd
 from PyQt5.QtGui import QFont, QIcon
 from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QPlainTextEdit, QPushButton
 
@@ -28,7 +31,7 @@ class mainWin(QMainWindow):
         self.pushSendButton = QPushButton("SEND",self)
         self.pushSendButton.setGeometry(20,510,360,40)
         self.pushSendButton.setFont(QFont('Arial', 12))
-        """self.pushSendButton.clicked.connect(self.pushSendButton_Clicked)"""
+        self.pushSendButton.clicked.connect(self.pushSendButton_Clicked)
 
         #Cancel Button
         self.label2 = QLabel("",self)
@@ -43,7 +46,19 @@ class mainWin(QMainWindow):
         self.pushImportCsvButton.setGeometry(20,10,180,70)
         self.pushImportCsvButton.setFont(QFont('Arial', 12))
         """self.pushImportCsvButton.clicked.connect(self.pushImportCsvButton_Clicked)"""
-       
+
+    #Send Button Clicked
+    def pushSendButton_Clicked(self):
+        column_names = ["Cantact Names", "Contact Numbers"]
+        contactDF = pd.read_csv("contact_list.csv", names = column_names)
+        contact_list = contactDF.values.tolist()
+    
+        for i in range(len(contact_list)):
+            now = datetime.datetime.now()
+            hour = now.hour
+            minute = now.minute
+            pwk.sendwhatmsg("+" + str(contact_list[i][1]), "Hello" , hour, minute + 1,5,True,7)   
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     win = mainWin()
