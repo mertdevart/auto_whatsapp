@@ -57,7 +57,8 @@ class mainWin(QMainWindow):
             now = datetime.datetime.now()
             hour = now.hour
             minute = now.minute
-            pwk.sendwhatmsg("+" + str(contact_list[i][1]), "Hello" , hour, minute + 1,5,True,7)   
+            massagge = self.massTextBox.toPlainText()
+            pwk.sendwhatmsg("+" + str(contact_list[i][1]), massagge, hour, minute + 1,5,True,7)   
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
