@@ -4,7 +4,7 @@ import pywhatkit as pwk
 import datetime
 import pandas as pd
 from PyQt5.QtGui import QFont, QIcon
-from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QPlainTextEdit, QPushButton
+from PyQt5.QtWidgets import QApplication, QFileDialog, QLabel, QMainWindow, QPlainTextEdit, QPushButton
 
 class mainWin(QMainWindow):
 
@@ -38,14 +38,14 @@ class mainWin(QMainWindow):
         self.pushCancelButton = QPushButton("CANCEL",self)
         self.pushCancelButton.setGeometry(20,560,360,30)
         self.pushCancelButton.setFont(QFont('Arial', 10))
-        """self.pushCancelButton.clicked.connect(self.pushCancelButton_Clicked)"""
+        self.pushCancelButton.clicked.connect(self.pushCancelButton_Clicked)
 
         #Import Csv Button
         self.label2 = QLabel("",self)
         self.pushImportCsvButton = QPushButton("IMPORT .CSV",self)
         self.pushImportCsvButton.setGeometry(20,10,180,70)
         self.pushImportCsvButton.setFont(QFont('Arial', 12))
-        """self.pushImportCsvButton.clicked.connect(self.pushImportCsvButton_Clicked)"""
+        self.pushImportCsvButton.clicked.connect(self.pushImportCsvButton_Clicked)
 
     #Send Button Clicked
     def pushSendButton_Clicked(self):
@@ -59,6 +59,15 @@ class mainWin(QMainWindow):
             minute = now.minute
             massagge = self.massTextBox.toPlainText()
             pwk.sendwhatmsg("+" + str(contact_list[i][1]), massagge, hour, minute + 1,5,True,7)   
+
+    #Cancel Button
+    def pushCancelButton_Clicked(self):
+        self.massTextBox("asda")
+
+    #Import Csv Button Clicked
+    def pushImportCsvButton_Clicked(self):
+        self.fileName = QFileDialog.getOpenFileName(filter= "csv(*.csv)")[0]
+        print("File :",self.fileName)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
