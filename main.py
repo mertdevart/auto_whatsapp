@@ -50,7 +50,7 @@ class mainWin(QMainWindow):
     #Send Button Clicked
     def pushSendButton_Clicked(self):
         column_names = ["Cantact Names", "Contact Numbers"]
-        contactDF = pd.read_csv("contact_list.csv", names = column_names)
+        contactDF = pd.read_csv(self.csvFile, names = column_names)
         contact_list = contactDF.values.tolist()
     
         for i in range(len(contact_list)):
@@ -62,12 +62,12 @@ class mainWin(QMainWindow):
 
     #Cancel Button
     def pushCancelButton_Clicked(self):
-        self.massTextBox("asda")
+        exit()
 
     #Import Csv Button Clicked
     def pushImportCsvButton_Clicked(self):
-        self.fileName = QFileDialog.getOpenFileName(filter= "csv(*.csv)")[0]
-        print("File :",self.fileName)
+        self.csvFile = QFileDialog.getOpenFileName(filter= "csv(*.csv)")[0]
+        print("File :",self.csvFile)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
