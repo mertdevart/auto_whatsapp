@@ -1,6 +1,8 @@
 import os
 import sys
+import PyQt5
 from PyQt5 import QtCore
+from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtCore import QTime
 import pywhatkit as pwk
 import datetime
@@ -18,6 +20,13 @@ class mainWin(QMainWindow):
     
     def initUI(self):
 
+        #thread
+        self.analyzeThread = analyzingThread(self)
+        # self.analyzeThread.analyzedSignal.connect(self.restartOutput)
+        self.toggle = True
+        self.analyzeThread.start()
+        self.analyzeThread.pause()
+
         #Main Window
         self.setGeometry(500,300,400,600)
         self.setWindowTitle("Auto Whatsapp")
@@ -34,7 +43,6 @@ class mainWin(QMainWindow):
         self.timeBox.setGeometry(210,11,170,25)
         self.timeBox.setFont(QFont('Arial', 16))
         self.timeBox.setDisplayFormat("hh:mm")
-        print(int(self.timeBox.time().toString("hh")))
         
         #Send Button 
         self.label1 = QLabel("",self)
@@ -62,22 +70,67 @@ class mainWin(QMainWindow):
         column_names = ["Cantact Names", "Contact Numbers"]
         contactDF = pd.read_csv(self.csvFile, names = column_names)
         contact_list = contactDF.values.tolist()
-    
-        for i in range(len(contact_list)):
-            hour = self.timeBox.time().toString("hh")
-            minute = self.timeBox.time().toString("mm")
-            massagge = self.massTextBox
-            pwk.sendwhatmsg("+" + str(contact_list[i][1]), massagge, int(hour), int(minute) + 1,5,True,7) 
-            
+
+        hour = self.timeBox.time().toString("hh")
+        minute = self.timeBox.time().toString("mm")
+        massagge = self.massTextBox.toPlainText()
+        self.analyzeThread.set(hour, minute, massagge, contact_list)
+        if self.toggle:
+            self.analyzeThread.resume()
+        else:
+            self.analyzeThread.pause()
+       
     #Cancel Button
     def pushCancelButton_Clicked(self):
-        sys.exit(app.exec_())
+        self.toggle = False
 
     #Import Csv Button Clicked
     def pushImportCsvButton_Clicked(self):
         self.csvFile = QFileDialog.getOpenFileName(filter= "csv(*.csv)")[0]
         print("File :",self.csvFile)
         self.pushImportCsvButton.setText(".csvFile imported")
+
+class analyzingThread(QThread):
+    global inputVideoPath
+    # analyzedSignal = pyqtSignal()
+    hour, min, message, contactList = None, None, None, None
+    pauseBoolean = False
+    sync = PyQt5.QtCore.QMutex()
+    pauseCond = PyQt5.QtCore.QWaitCondition()
+
+    def set(self, hour, min, mesasge, contactList):
+        self.hour = hour
+        self.min = min
+        self.message = mesasge
+        self.contactList = contactList
+
+    def resume(self):
+        self.sync.lock()
+        self.pauseBoolean = False
+        self.sync.unlock()
+        self.pauseCond.wakeAll()
+
+    def pause(self):
+        self.sync.lock()
+        self.pauseBoolean = True
+        self.sync.unlock()
+
+    def job(self):    
+        print(type(self.message))
+        print(self.message)
+        for i in range(len(self.contactList)):
+            pwk.sendwhatmsg("+" + str(self.contactList[i][1]), self.message, int(self.hour), int(self.min) + 1,7,True,10) 
+            pwk.sendwhatmsg()
+            
+
+    def run(self):
+        while True:
+            self.sync.lock()
+            if self.pauseBoolean:
+                self.pauseCond.wait(self.sync)
+            self.sync.unlock()
+            self.job()
+            self.pause()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
