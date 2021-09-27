@@ -22,7 +22,7 @@ Programın kullanımı =
 
 5-) İptal butonuna tıklayarak o an ki işlemi durdurabilirsiniz.
 
-## Features
+## Future
 ![Untitled](https://user-images.githubusercontent.com/69154498/134968514-f8e9b002-d1b4-460b-a30f-4a445f73028c.png)
 
 1-).csv dosyası yüklemeden manuel olarak data eklenebilir ve mesaj gönderilebilir olucak.
