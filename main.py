@@ -116,13 +116,10 @@ class analyzingThread(QThread):
         self.sync.unlock()
 
     def job(self):    
-        print(type(self.message))
-        print(self.message)
         for i in range(len(self.contactList)):
             pwk.sendwhatmsg("+" + str(self.contactList[i][1]), self.message, int(self.hour), int(self.min) + 1,7,True,10) 
             pwk.sendwhatmsg()
             
-
     def run(self):
         while True:
             self.sync.lock()
